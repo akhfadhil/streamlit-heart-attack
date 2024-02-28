@@ -16,54 +16,8 @@ st.set_page_config(
 st.title('Analisis Faktor Risiko dan Perilaku Kesehatan Terhadap Serangan Jantung')
 
 # Load dataframe
-df = pd.read_csv('behavior_factor.csv')
-behavioral_factors = ['HeightInMeters', 'WeightInKilograms', 'BMI', 'AgeCategory', 'SmokerStatus', 
-                      'ECigaretteUsage', 'AlcoholDrinkers', 'PhysicalActivities', 'SleepHours', 'HadHeartAttack']
-bf = df[behavioral_factors]
-
-# Rename categorical value
-bf['SmokerStatus'].replace({'Current smoker - now smokes some days' : 'Current smoker (Somedays)',
-                            'Current smoker - now smokes every day' : 'Current smoker (Everyday)'}, inplace=True)
-bf['ECigaretteUsage'].replace({'Not at all (right now)' : 'Not at all',
-                               'Never used e-cigarettes in my entire life' : 'Never',
-                               'Use them every day' : 'Everyday',
-                               'Use them some days' : 'Somedays'}, inplace=True)
-
-# Outlier Handling
-# Sleep Hour
-Q1 = bf['SleepHours'].quantile(0.25)
-Q3 = bf['SleepHours'].quantile(0.75)
-IQR = Q3-Q1
-lower_limit = Q1 - (IQR * 1.5)
-upper_limit = Q3 + (IQR * 1.5)
-
-bf = bf.drop(bf[bf['SleepHours'] < lower_limit].index)
-bf = bf.drop(bf[bf['SleepHours'] > upper_limit].index)
-bf.reset_index(drop=True, inplace=True)
-
-# Height
-Q1 = bf['HeightInMeters'].quantile(0.25)
-Q3 = bf['HeightInMeters'].quantile(0.75)
-IQR = Q3-Q1
-lower_limit = Q1 - (IQR * 1.5)
-upper_limit = Q3 + (IQR * 1.5)
-
-bf = bf.drop(bf[bf['HeightInMeters'] < lower_limit].index)
-bf = bf.drop(bf[bf['HeightInMeters'] > upper_limit].index)
-bf.reset_index(drop=True, inplace=True)
-
-# Weight
-Q1 = bf['WeightInKilograms'].quantile(0.25)
-Q3 = bf['WeightInKilograms'].quantile(0.75)
-IQR = Q3-Q1
-lower_limit = Q1 - (IQR * 1.5)
-upper_limit = Q3 + (IQR * 1.5)
-
-bf = bf.drop(bf[bf['WeightInKilograms'] < lower_limit].index)
-bf = bf.drop(bf[bf['WeightInKilograms'] > upper_limit].index)
-bf.reset_index(drop=True, inplace=True)
-
-
+bf = pd.read_parquet('bf.parquet', engine='pyarrow')
+bf = bf.drop(bf.columns[0], axis=1)
 
 # Select box 1
 with st.container():
