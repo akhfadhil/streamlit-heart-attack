@@ -16,7 +16,7 @@ st.set_page_config(
 st.title('Analisis Faktor Risiko dan Perilaku Kesehatan Terhadap Serangan Jantung')
 
 # Load dataframe
-df = pd.read_csv('heart_2022_no_nans.csv')
+df = pd.read_csv('behavior_factor.csv')
 behavioral_factors = ['HeightInMeters', 'WeightInKilograms', 'BMI', 'AgeCategory', 'SmokerStatus', 
                       'ECigaretteUsage', 'AlcoholDrinkers', 'PhysicalActivities', 'SleepHours', 'HadHeartAttack']
 bf = df[behavioral_factors]

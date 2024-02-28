@@ -1,0 +1,9 @@
+pandas==2.2.0
+numpy==1.26.3
+streamlit
+altair==5.2.0
+matplotlib
+plotly_express>=0.4.1
+scikit-learn
+joblib
+pip==23.2.1
