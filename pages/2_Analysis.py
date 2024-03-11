@@ -16,9 +16,9 @@ st.set_page_config(
 st.title('Analisis Faktor Risiko dan Perilaku Kesehatan Terhadap Serangan Jantung')
 
 # Load dataframe
-data = pd.read_parquet('bf.parquet', engine='pyarrow')
-data = data.drop(data.columns[0], axis=1)
-bf = data.sample(frac =.25) 
+bf = pd.read_parquet('bf.parquet', engine='pyarrow')
+bf = bf.drop(bf.columns[0], axis=1)
+
 
 # Select box 1
 with st.container():
@@ -200,8 +200,8 @@ with col222:
     with st.container(border=True):
         st.markdown(
             """
-            Faktor utama seseorang menderita penyakit jantung dari grafik diatas yaitu merokok dengan persentase 40.2%. Diikuti dengan faktor kelelahan sebesar 22.8%, 
-            alkohol sebesar 20.2%, dan rokok elektrik sebesar 16.8%. 
+            Faktor utama seseorang menderita penyakit jantung dari grafik diatas yaitu merokok dengan persentase 40.2%. Diikuti dengan faktor kelelahan sebesar 23.2%, 
+            alkohol sebesar 21.1%, dan rokok elektrik sebesar 15.2%. 
             """)
 
 st.write('***')
