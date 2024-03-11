@@ -37,10 +37,52 @@ with st.container():
     ).configure_title(fontSize=20)
     st.altair_chart(bar_chart1)
 
+# Text
+
+colc1, colc2, colc3 = st.columns([1,2,1])
+with colc2:
+    with st.container(border=True):
+        if behaviour == 'SmokerStatus':
+            st.markdown(
+            """
+            Berdasarkan kelompok umur, tidak sedikit orang yang masih berusia remaja memiliki kebiasaan merokok setiap hari dan akan  bertambah jumlahnya hingga umur sekitar 60 
+            kemudian menurun. Salah satu faktor yang mendorong hal tersebut adalah yaitu persepsi bahwa merokok menghilangkan stress atau hanya ingin terlihat gaul/dewasa.
+            \nSeiring dengan itu, jumlah orang yang berhenti merokok atau Former smoker akan bertambah setelah umur 60. Hal tersebut disebabkan oleh kondisi tubuh yang sudah 
+            tidak lagi sehat dan lebih rentan terkena penyakit.
+
+            """)
+        elif behaviour == 'ECigaretteUsage':
+            st.markdown(
+            """
+            Pengguna e-cigarette atau rokok elektrik banyak dialami oleh kelompok usia muda yaitu 18-24. Rokok elektrik menjadi tren di kalangan pelajar atau mahasiswa, 
+            karena mudah didapatkan dan dianggap menarik. Penyebab lain yaitu ajakan perokok kepada non-perokok karena terdapat berbagai rasa yang menarik pada rokok elektrik 
+            sehingga dapat mempengaruhi orang yang tidak merokok untuk mencoba. 
+            \nPerlu diingat bahwa penggunaan rokok elektrik pada remaja dapat menyebabkan gangguan perkembangan otak dan kerusakan fungsi paru-paru. Selain itu, risiko kesehatan 
+            yang terkait dengan rokok elektrik masih menjadi penelitian untuk memahami efek jangka panjangnya.
+            """)
+        elif behaviour == 'AlcoholDrinkers':
+            st.markdown(
+            """
+            Kebiasaan meminum alcohol banyak dilakukan oleh kelompok usia dewasa hingga umur 70. Amerika adalah negara sub-tropis sehingga banyak penduduknya yang meminum alcohol 
+            untuk menghangatkan tubuh dan membuat peminumnya merasa lebih relax. 
+            \nMeminum alcohol memiliki dampak yang mirip dengan merokok yaitu kecanduan sehingga tidak dapat membatasi jumlah alcohol yang dikonsumsi. Hal tersebut dapat 
+            berdampak pada kesehatan seperti gangguan otak dan saraf, masalah pencernaan serta penyakit jantung.
+            """)
+        elif behaviour == 'PhysicalActivities':
+            st.markdown(
+            """
+            Grafik menunjukkan bahwa jumlah orang yang beraktivitas fisik meningkat hingga kelompok usia 65-69. Hal tersebut disebabkan oleh tuntutan pekerjaan yang mengharuskan 
+            mereka beraktivitas fisik setiap hari. Beraktivitas fisik memiliki dampak bagus bagi tubuh namun juga harus diimbangi dengan istirahat yang cukup. Jika tidak 
+            maka tubuh akan merasa kelelahan.
+            \nKelelahan sangat berpengaruh terhadap kondisi psikis seseorang, sehingga dapat mengakibatkan penyumbatan pembuluh darah yang mengarah ke jantung. Jika ini 
+            terjadi, maka besar potensi seseorang mengalami serangan jantung dengan risiko kematian yang tinggi.
+            """)
+
 # Column Initiation
 col21, col22= st.columns(2)
-col31, col32, col33 = st.columns(3, gap='small')
-
+st.write('***')
+# col31, col32, col33 = st.columns(3, gap='small')
+col221, col222= st.columns(2)
 # Bar chart 2
 with col21:
     BMIData = bf[bf['HadHeartAttack'] == 'Yes']
@@ -55,6 +97,13 @@ with col21:
         height=450
     ).configure_title(fontSize=20)
     st.altair_chart(bar_chart2, use_container_width=True)
+    with st.container(border=True):
+        st.markdown(
+            """
+            Grafik diatas merupakan BMI para penderita serangan jantung. Dari grafik tersebut, dapat disimpulkan bahwa banyak penderita penyakit jantung 
+            memiliki BMI diatas batas normal yaitu 18-25. Nilai BMI dengan jumlah terbanyak  yaitu sekitar 26 dan 27, dan meningkat di nilai 32. Hal tersebut 
+            menunjukkan banyak penderita penyakit jantung yang obesitas atau memiliki pola hidup yang kurang sehat.
+            """)
 
 # Bar chart 3
 with col22:
@@ -68,6 +117,13 @@ with col22:
         width=100
     ).configure_title(fontSize=20)
     st.altair_chart(bar_chart3)
+    with st.container(border=True):
+        st.markdown("""
+        Grafik menunjukkan bahwa orang yang dulunya merokok sering kali terkena serangan jantung. Selain itu, orang yang tidak pernah merokok 
+        juga tidak sedikit yang mengalami penyakit jantung. Jumlah penderita penyakit jantung banyak yang tidak menggunakan rokok elektrik dan 
+        tidak mengonsumsi alkohol. Sehingga dapat disimpulkan bahwa satu faktor tidak cukup untuk menunjukkan bahwa 
+        seseorang dapat terkena penyakit jantung. Orang yang memiliki beberapa kebiasaan buruk akan lebih rentan terkena penyakit jantung.
+        """)
 
 # Data prevalence
 SmokerData = bf[(bf['SmokerStatus'] == 'Current smoker (Everyday)') | (bf['SmokerStatus'] == 'Current smoker (Somedays)')]
@@ -88,38 +144,23 @@ behavior_percentages = {
     'Physically Active': PhysicalActivities_heart_attack_percentage.get('Yes')
 }
 
-# Bar chart 4 with diff data
-if behaviour == 'SmokerStatus':
-    behavior_data = SmokerData
-elif behaviour == 'ECigaretteUsage':
-    behavior_data = ECigaretteData
-elif behaviour == 'AlcoholDrinkers':
-    behavior_data = AlcoholDrinkersData
-elif behaviour == 'PhysicalActivities':
-    behavior_data = PhysicallyActiveData
-
-with col31:
-    bar_chart4 = alt.Chart(behavior_data, title='Correlation with Heart Attack Risk').mark_bar().encode(
-        y=alt.Y('count({behaviour}):Q', title="Individuals"),
-        x='HadHeartAttack:N',
-        color=alt.Color('count({behaviour}):Q', title='Individuals').scale(scheme="lightgreyred")
-    ).properties(
-        # width=300
-    ).configure_mark(
-        color='#E15917'
-    )
-    st.altair_chart(bar_chart4, use_container_width=True)
-
-# Bar chart 5
-with col32:
+# Bar chart 4
+with col221:
     bar_chart5 = alt.Chart(SleepHoursData, title='Distribution of Sleep Hours').mark_bar().encode(
         y=alt.Y('count({SleepHoursData}):Q', title="Frequency"),
         x='SleepHours:N',
         color=alt.Color('count({SleepHoursData}):Q', title='Frequency').scale(scheme="lightgreyred")
     ).properties(
     # width=400,
-)
-    st.altair_chart(bar_chart5)
+    )
+    st.altair_chart(bar_chart5, use_container_width=True)
+    with st.container(border=True):
+        st.markdown(
+            """
+            Grafik diatas merupakan distribusi jam tidur para penderita serangan jantung. Berdasarkan grafik tersebut, para penderita penyakit jantung memiliki jam tidur yang relatif 
+            normal yaitu sekitar 6 sampai 8 jam sehari. Tetapi, terdapat juga yang memiliki jam tidur dibawah 6 jam dan diatas 8 jam sehari. Dalam jangka panjang, kebiasaan jam tidur
+            tidak normal dapat memicu penyakit kronis seperti gangguan jantung dan diabetes.
+            """)
 
 # Pie chart
 fig = px.pie(
@@ -134,8 +175,43 @@ fig.update_layout(
     height=300,
 #     # paper_bgcolor="LightSteelBlue",
 )
-with col33:
+with col222:
     st.write(fig)
+    with st.container(border=True):
+        st.markdown(
+            """
+            Faktor utama seseorang menderita penyakit jantung dari grafik diatas yaitu merokok dengan persentase 40.2%. Diikuti dengan faktor kelelahan sebesar 22.8%, 
+            alkohol sebesar 20.2%, dan rokok elektrik sebesar 16.8%. 
+            """)
 
+st.write('***')
 
-
+colk1, colk2, colk3 = st.columns([1, 3, 1])
+with colk2:
+    with st.container(border=True):
+        st.subheader('Kesimpulan')
+        st.markdown("""
+            Semakin tua usia seseorang, maka semakin rentan menderita penyakit jantung. Hal
+            tersebut disebabkan oleh faktor kebiasaan yang kurang sehat seperti merokok dan mengonsumsi alkohol. 
+            Jumlah perokok aktif meningkat semakin bertambahnya umur hingga usia 65 tahun. Sedangkan orang dengan
+            usia lebih muda cenderung memilih rokok elektrik. Kebiasaan tidak sehat lain yaitu
+            meminum alkohol juga semakin meningkat hingga umur 70. Selain itu, orang dengan usia
+            tersebut juga banyak yang melakukan aktivitas fisik sehingga dapat menimbulkan kelelahan.
+            Body Mass Index (BMI) yang dimiliki oleh penderita penyakit jantung cenderung tidak
+            normal yaitu berkisar antara 25-30 yang berarti overweight dan tidak sedikit pula yang
+            melebihi 30 atau obesitas. Terlepas dari hal tersebut, kebanyakan penderita penyakit
+            jantung memiliki jam tidur normal sekitar 6 hingga 8 jam.
+            Faktor utama yang membuat seseorang menderita penyakit jantung yaitu
+            merokok. Selain itu, kelelahan dan meminum alkohol juga dapat membuat seseorang terkena penyakit jantung.
+            """)
+        st.subheader('Rekomendasi')
+        st.markdown("""
+            Secara keseluruhan, serangan jantung dapat dicegah. Dengan mengubah perilaku kita, kita dapat mengurangi risiko secara signifikan. 
+            Beberapa cara yang dapat dilakukan antara lain:
+            - Mengurangi kebiasaan merokok karena rokok dapat membuat kondisi jantung dan
+            paru-paru menjadi tidak sehat, bahkan ketika seseorang berhenti merokok.
+            - Beraktivitas fisik dengan porsi secukupnya untuk menghindari kelelahan yang 
+            dapat menyebabkan tekanan ekstra pada jantung. 
+            - Mengurangi konsumsi alkohol yang dapat meningkatkan tekanan darah sehingga
+            meningkatkan risiko gagal jantung atau stroke.
+            """)
