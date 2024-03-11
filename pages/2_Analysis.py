@@ -16,29 +16,47 @@ st.set_page_config(
 st.title('Analisis Faktor Risiko dan Perilaku Kesehatan Terhadap Serangan Jantung')
 
 # Load dataframe
-bf = pd.read_parquet('bf.parquet', engine='pyarrow')
-bf = bf.drop(bf.columns[0], axis=1)
+data = pd.read_parquet('bf.parquet', engine='pyarrow')
+data = data.drop(data.columns[0], axis=1)
+bf = data.sample(frac =.25) 
 
 # Select box 1
 with st.container():
     behaviour = st.selectbox("Behaviour", ['SmokerStatus', 'ECigaretteUsage', 'AlcoholDrinkers', 'PhysicalActivities'])
 
 # Bar chart 1
+def color_sort(behaviour):
+    if behaviour == 'AlcoholDrinkers' or behaviour == 'PhysicalActivities':
+        return "ascending"
+    elif behaviour == 'ECigaretteUsage':
+        return ['Never', 'Not at all', 'Somedays', 'Everyday']
+    else: 
+        return "descending"
+    
+def label_sort(behaviour):
+    if behaviour == 'ECigaretteUsage':
+        return ['Everyday', 'Somedays', 'Not at all', 'Never']
+    else:
+        return "ascending"
+        
 with st.container():
+    print(color_sort)
     title = alt.TitleParams('Behaviour Correlations Among Different Age Groups', anchor='middle')
     bar_chart1 = alt.Chart(bf, title=title).mark_bar().encode(
         column=alt.Column('AgeCategory', header=alt.Header(orient='bottom')),
         y=alt.Y('count({behaviour}):Q', title="Individuals"),
         # x='SmokerStatus:N',
-        x=alt.X(behaviour, axis=alt.Axis(labels=False), title=None),
-        color=alt.Color(behaviour).scale(scheme="lightgreyred")
+        x=alt.X(behaviour,
+                sort=label_sort(behaviour),
+                axis=alt.Axis(labels=False), 
+                title=None),
+        color=alt.Color(behaviour, sort=color_sort(behaviour)).scale(scheme="lightgreyred")
     ).properties(
         width=75
     ).configure_title(fontSize=20)
     st.altair_chart(bar_chart1)
 
 # Text
-
 colc1, colc2, colc3 = st.columns([1,2,1])
 with colc2:
     with st.container(border=True):
@@ -83,7 +101,9 @@ col21, col22= st.columns(2)
 st.write('***')
 # col31, col32, col33 = st.columns(3, gap='small')
 col221, col222= st.columns(2)
+
 # Bar chart 2
+bf['BMI'] = pd.cut(bf['BMI'], bins=[0, 18.5, 24.9, 29.9, 1000], include_lowest=True, labels=['Underweight', 'Healthy', 'Overweight', 'Obesity'])
 with col21:
     BMIData = bf[bf['HadHeartAttack'] == 'Yes']
     bar_chart2 = alt.Chart(BMIData, title='BMI Prevalence').mark_bar().encode(
