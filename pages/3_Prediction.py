@@ -16,110 +16,118 @@ scaler = joblib.load('scaler.save')
 
 # Judul
 st.title('Heart Attack Prediction')
-with st.container():
+with st.container(border=True):
+
+    input = [0 for x in range(0, 29)]
+
     # Tinggi
     tinggi = st.number_input('Tinggi badan (m)', value=1.7, placeholder="Type a number...")
     st.caption('Use . instead of ,')
+    input[0] = tinggi
 
     # Berat
     berat = st.number_input('Berat badan (kg)', value=60, placeholder="Type a number...")
     st.caption('Use . instead of ,')
+    input[1] = berat
 
     # BMI
     bmi = round(berat/(tinggi*tinggi), 2)
     if st.button('BMI'):
         st.write('BMI: ', bmi)
+        input[2] = bmi
+
+    col1, col2 = st.columns(2)
 
     # Age
-    age = st.selectbox("Age Category", ['Age 18 to 24', 'Age 25 to 29', 'Age 30 to 34', 
-                            'Age 35 to 39', 'Age 40 to 44', 'Age 45 to 49', 
-                            'Age 50 to 54', 'Age 55 to 59', 'Age 60 to 64', 
-                            'Age 65 to 69', 'Age 70 to 74', 'Age 75 to 79', 
-                            'Age 80 or older',])
+    with col1:
+        age = st.number_input('Usia', value=30, placeholder="Type a number...")
 
-    if age == 'Age 18 to 24':
-        age = 0
-    elif age == 'Age 25 to 29':
-        age = 1
-    elif age == 'Age 30 to 34':
-        age = 2
-    elif age == 'Age 35 to 39':
-        age = 3
-    elif age == 'Age 40 to 44':
-        age = 4
-    elif age == 'Age 45 to 49':
-        age = 5
-    elif age == 'Age 50 to 54':
-        age = 6
-    elif age == 'Age 55 to 59':
-        age = 7
-    elif age == 'Age 60 to 64':
-        age = 8
-    elif age == 'Age 65 to 69':
-        age = 9
-    elif age == 'Age 70 to 74':
-        age = 10
-    elif age == 'Age 75 to 79':
-        age = 11
-    elif age == 'Age 80 or older':
-        age = 12
+    if age <= 24:
+        input[4] = 1
+    elif 25 <= age <= 29:
+        input[5] = 1
+    elif 30 <= age <= 34:
+        input[6] = 1
+    elif 35 <= age <= 39:
+        input[7] = 1
+    elif 40 <= age <= 44:
+        input[8] = 1
+    elif 45 <= age <= 49:
+        input[9] = 1
+    elif 50 <= age <= 54:
+        input[10] = 1
+    elif 55 <= age <= 59:
+        input[11] = 1
+    elif 60 <= age <= 64:
+        input[12] = 1
+    elif 65 <= age <= 69:
+        input[13] = 1
+    elif 70 <= age <= 74:
+        input[14] = 1 
+    elif 75 <= age <= 79:
+        input[15] = 1
+    elif 80 <= age:
+        input[16] = 1
 
     # Smoke status
-    smoke = st.selectbox("Smoke status", ['Current smoker - every day', 
+    with col2:
+        smoke = st.selectbox("Smoke status", ['Current smoker - every day', 
                                         'Current smoker - some days', 
                                         'Former smoker', 'Never smoked'])
 
     if smoke == 'Current smoker - every day':
-        smoke = 0
+        input[17] = 1
     elif smoke == 'Current smoker - some days':
-        smoke = 1
+        input[18] = 1
     elif smoke == 'Former smoker':
-        smoke = 2
+        input[19] = 1
     elif smoke == 'Never smoked':
-        smoke = 3
+        input[20] = 1
 
     # E cigarette
-    ecigar = st.selectbox("ECigarette Usage", ['Never use', 
+    with col1:
+        ecigar = st.selectbox("ECigarette Usage", ['Never use', 
                                             'Not at all (right now)', 
                                             'Everyday', 'Somedays'])
 
-    if ecigar == 'Never use':
-        ecigar = 0
+    if ecigar == 'Everyday':
+        input[21] = 1
+    elif ecigar == 'Never use':
+        input[22] = 1
     elif ecigar == 'Not at all (right now)':
-        ecigar = 1
-    elif ecigar == 'Everyday':
-        ecigar = 2
+        input[23] = 1
     elif ecigar == 'Somedays':
-        ecigar = 3
+        input[24] = 1
 
     # Alcohol
-    alcohol = st.selectbox("Alcohol", ["Yes", "No"])
+    with col2:
+        alcohol = st.selectbox("Alcohol", ["Yes", "No"])
 
-    if alcohol == 'Yes':
-        alcohol = 1
-    elif alcohol == 'No':
-        alcohol = 0
+    if alcohol == 'No':
+        input[25] = 1
+    elif alcohol == 'Yes':
+        input[26] = 1
 
     # Physical Active
-    physic = st.selectbox("Physically active", ["Yes", "No"])
+    with col1:
+        physic = st.selectbox("Physically active", ["Yes", "No"])
 
-    if physic == 'Yes':
-        physic = 1
-    elif physic == 'No':
-        physic = 0
+    if physic == 'No':
+        input[27] = 1
+    elif physic == 'Yes':
+        input[28] = 1
 
     # Sleep Hour
-    sleep = st.slider('Sleep hour per day', 3.0, 11.0, 8.0)
-
+    with col2:
+        sleep = st.slider('Sleep hour per day', 3.0, 11.0, 8.0)
+        input[3] = sleep
 
 heart_attack_diag = ''
-print(tinggi, berat, bmi, age, smoke, ecigar, alcohol, physic, sleep)
 if st.button('Predict'):
-    input = (tinggi, berat, bmi, age, smoke, ecigar, alcohol, physic,sleep)
+    input = tuple(input)
     as_array = np.array(input)
     reshape = as_array.reshape(1, -1)
     std_data = scaler.transform(reshape)
-    print(std_data)
     heart_attack_pred = jantung_model.predict(std_data)
 
     if (heart_attack_pred[0]==0):
